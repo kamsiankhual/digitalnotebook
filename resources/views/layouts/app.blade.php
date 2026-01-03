@@ -6,8 +6,12 @@
     <title>My Notebook</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <link rel="stylesheet" href="{{ asset('assets/libs/summernote-0.9.0-dist/summernote-lite.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('assets/libs/toastr-master/toastr-master/build/toastr.min.css') }}">
 
     @yield('css')
 </head>
@@ -152,15 +156,33 @@
                              x-transition:leave-end="transform opacity-0 scale-95">
                             
                             <div class="px-4 py-2 border-b border-gray-100 flex items-center space-x-2">
+                                <i class="fas fa-user"></i>
                                 <p class="text-sm text-gray-500">Hi, </p>
                                 <p class="text-sm text-gray-500 truncate">{{ ucwords(Auth::user()->name) ?? 'User' }}</p>
                             </div>
 
+                            <div class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <i class="fa-solid fa-pen-to-square me-1"></i>Edit Profile
+
+                                <!-- drop down -->
+                                <a href="{{ route('profile.editinformation') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                    <i class="fa-regular fa-user mr-2"></i> Profile Info
+                                </a>
+
+                                <a href="{{ route('profile.editpassword') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                                    <i class="fa-solid fa-key mr-2"></i> Password
+                                </a>
+
+                                <a href="{{ route('profile.deleteaccount') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
+                                    <i class="fa-solid fa-trash mr-2"></i> Delete Account
+                                </a>
+                            </div>
+
+
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Sign out
-                                </button>
+
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fa-solid fa-arrow-right-from-bracket me-1"></i>Sign out</button>
                             </form>
                         </div>
                     </div>
@@ -168,49 +190,38 @@
             </header>
 
             <main class="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-8">
-                @if(session('success'))
-                    <div id="flash-message" class="mb-4 bg-green-50 border-l-4 border-green-400 p-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-green-700">{{ session('success') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @elseif(session('info'))
-                    <div id="flash-message" class="mb-4 bg-sky-50 border-l-4 border-sky-400 p-4">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-sky-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-red-600">{{ session('info') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
                 @yield('content')
             </main>
         </div>
     </div>
 
     <script src="{{ asset('assets/libs/jquery/jquery-3.7.1.min.js') }}"></script>
+
     <script src="{{ asset('assets/libs/summernote-0.9.0-dist/summernote-lite.min.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded',function(){
-            const getflash = document.getElementById('flash-message');
 
-            if(getflash){
+    <script src="{{ asset('assets/libs/toastr-master/toastr-master/build/toastr.min.js') }}"></script>
+    
+    <!-- Controller notifi -->
+    @if(Session::has('success'))
+        <script>toastr.success("{{ session()->get('success') }}","Success!",{timeOut:3000})</script>
+    @endif
 
-                setTimeout(()=>{
-                    getflash.remove();
-                },3000);
-            }
-        })
-    </script>
+    @if(session('info'))
+        <script>toastr.info("{{ session('info') }}","Information!",{timeOut:3000})</script>
+    @endif
+
+    @if(Session::has('error'))
+        <script>toastr.error("{{ session()->get('error') }}","Failed!",{timeOut:3000})</script>
+    @endif
+
+    <!-- form error -->
+    @if($errors)
+        @foreach($errors->all() as $error)
+            <script>toastr.error("{{ $error }}","Warning!",{timeOut:3000})</script>
+        @endforeach
+    @endif
+
+
 
     @yield('scripts')
 </body>

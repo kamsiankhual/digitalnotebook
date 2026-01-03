@@ -13,7 +13,14 @@ Route::get('/', function () {
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/info',[ProfileController::class,'editinformation'])->name('profile.editinformation');
+
+    Route::get('/profile/password',[ProfileController::class,'editpassword'])->name('profile.editpassword');
+
+    Route::get('/profile/account',[ProfileController::class,'deleteaccount'])->name('profile.deleteaccount');
+
+
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 

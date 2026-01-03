@@ -41,7 +41,7 @@ class NotesController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        $notes = $query->paginate(6)->withQueryString();
+        $notes = $query->paginate(1)->withQueryString();
         
         $categories = Category::all(); 
 
@@ -186,7 +186,7 @@ class NotesController extends Controller
             }
         }
 
-        session()->flash('success','New Note Created!');
+        session()->flash('success','Note Updated Successfully!');
 
         return redirect(route('notes.index'));
     }
